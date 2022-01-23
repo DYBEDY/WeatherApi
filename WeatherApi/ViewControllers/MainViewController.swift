@@ -7,62 +7,56 @@
 
 import UIKit
 
+struct Link {
+    static let weatherURL = "https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b1b15e88fa797225412429c1c50c122a1"
+}
+
 class MainViewController: UIViewController {
     
     @IBOutlet var weatherImage: UIImageView!
     @IBOutlet var temperatureLabel: UILabel!
-    @IBOutlet var feelsLikeTemperatureLabel: UILabel!
-    @IBOutlet var cityLbel: UILabel!
-    
-    var weather: CurrentWeatherData!
-    
+    @IBOutlet var cityLabel: UILabel!
+    @IBOutlet weak var weatherLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-      
+        
         fetchData()
-        
-        
-        func updateInteface(weather: CurrentWeather) {
-            DispatchQueue.main.async {
-                self.cityLbel.text = weather.cityName
-                self.temperatureLabel.text = weather.temperatureString
-                self.feelsLikeTemperatureLabel.text = weather.feelsTemperatureString
-                self.weatherImage.image = UIImage(systemName: weather.systemIconNameString)
-            }
-        }
     }
-
-    
-    
     
     @IBAction func searchPressedButton(_ sender: Any) {
-        
+       
+        }
     }
-    
-    
-    
-    
-    
 
+
+// MARK: Private Methods
+extension MainViewController {
+    private func setInterface(weatherData: WeatherData) {
+        cityLabel.text = weatherData.name
+        temperatureLabel.text = weatherData.main.tempInCelsius
+        weatherImage.image = UIImage(
+            systemName: weatherData.weather.first?.systemIconNameString ?? "nosign"
+        )
+        weatherLabel.text = weatherData.weather.first?.main ?? "No data"
+    }
+}
+
+// MARK: Networking
+extension MainViewController {
     func fetchData() {
-        NetworkManager.shared.fetch(dataType: CurrentWeatherData.self, from: "https://api.openweathermap.org/data/2.5/weather?q=London&apikey=31febb91c365c99e1c2dd2cb05e33f70") { result in
+        NetworkManager.shared.fetch(dataType: WeatherData.self, from: Link.weatherURL) { result in
             switch result {
-                
-            case .success(let currentData):
-                self.weather = currentData
-                
-            case .failure( let error):
-                print(error.localizedDescription)
+            case .success(let weatherData):
+                self.setInterface(weatherData: weatherData)
+            case .failure(let error):
+                print(error)
             }
         }
     }
-    
- 
-    
 }
-// MARK: - Alert method
 
+// MARK: - Alert method
 extension MainViewController {
     func showSearchAlertController(withTitle titlte: String?, message: String?, style: UIAlertController.Style, completion: @escaping(String) -> Void) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: style)

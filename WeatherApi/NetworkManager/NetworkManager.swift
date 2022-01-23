@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
 
 enum NetworkError: Error {
     case invalidURL
@@ -14,38 +13,23 @@ enum NetworkError: Error {
     case decodingError
 }
 
-
-
-
-
 class NetworkManager {
     static let shared = NetworkManager()
     
     private init() {}
-    
-    
-    
  
-    var onCompletion: ((CurrentWeather) -> Void)?
-    
-    
-    
-    
-    
-    
-    
     func fetch<T: Decodable>(dataType: T.Type, from url: String, completion: @escaping(Result<T, NetworkError>) -> Void) {
         guard let url = URL(string: url) else {
             completion(.failure(.invalidURL))
             return
         }
+        
         URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data else {
                 completion(.failure(.noData))
-                print(error?.localizedDescription ?? "error")
+                print(error?.localizedDescription ?? "No description")
                 return
             }
-            
             do {
                 let type = try JSONDecoder().decode(T.self, from: data)
                 DispatchQueue.main.async {
@@ -54,8 +38,6 @@ class NetworkManager {
             } catch {
                 completion(.failure(.decodingError))
             }
-        } .resume()
-        
+        }.resume()
     }
-    
 }

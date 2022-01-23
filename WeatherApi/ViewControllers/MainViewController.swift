@@ -15,12 +15,22 @@ class MainViewController: UIViewController {
     @IBOutlet var cityLbel: UILabel!
     
     var weather: CurrentWeatherData!
-    var newWeather: CurrentWeather!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+      
         fetchData()
+        
+        
+        func updateInteface(weather: CurrentWeather) {
+            DispatchQueue.main.async {
+                self.cityLbel.text = weather.cityName
+                self.temperatureLabel.text = weather.temperatureString
+                self.feelsLikeTemperatureLabel.text = weather.feelsTemperatureString
+                self.weatherImage.image = UIImage(systemName: weather.systemIconNameString)
+            }
+        }
     }
 
     
@@ -32,14 +42,7 @@ class MainViewController: UIViewController {
     
     
     
-    func updateInteface(weather: CurrentWeather) {
-        DispatchQueue.main.async {
-            self.cityLbel.text = weather.cityName
-            self.temperatureLabel.text = weather.temperatureString
-            self.feelsLikeTemperatureLabel.text = weather.feelsTemperatureString
-            self.weatherImage.image = UIImage(systemName: weather.systemIconNameString)
-        }
-    }
+    
     
 
     func fetchData() {
@@ -54,6 +57,8 @@ class MainViewController: UIViewController {
             }
         }
     }
+    
+ 
     
 }
 // MARK: - Alert method
